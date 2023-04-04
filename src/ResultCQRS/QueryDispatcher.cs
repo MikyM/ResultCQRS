@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Remora.Results;
 
 namespace ResultCQRS;
@@ -10,16 +11,19 @@ public class QueryDispatcher : IQueryDispatcher
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<QueryDispatcher> _logger;
+    private readonly IOptions<ResultCQRSConfiguration> _options;
 
     /// <summary>
     /// Creates new instance of <see cref="QueryDispatcher"/>.
     /// </summary>
     /// <param name="serviceProvider">The service provider.</param>
     /// <param name="logger">The logger.</param>
-    public QueryDispatcher(IServiceProvider serviceProvider, ILogger<QueryDispatcher> logger)
+    /// <param name="options">The options.</param>
+    public QueryDispatcher(IServiceProvider serviceProvider, ILogger<QueryDispatcher> logger, IOptions<ResultCQRSConfiguration> options)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
+        _options = options;
     }
 
     /// <inheritdoc/>
@@ -27,10 +31,24 @@ public class QueryDispatcher : IQueryDispatcher
     {
         try
         {
-            await using var scope = _serviceProvider.CreateAsyncScope();
-            var handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TQuery, TQueryResult>>();
-            var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
-            return res;
+            if (_options.Value.CreateScopesForQueries)
+            {
+                await using var scope = _serviceProvider.CreateAsyncScope();
+                
+                var handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TQuery, TQueryResult>>();
+                
+                var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
+                
+                return res;
+            }
+            else
+            {
+                var handler = _serviceProvider.GetRequiredService<IQueryHandler<TQuery, TQueryResult>>();
+                
+                var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
+                
+                return res;
+            }
         }
         catch (Exception ex)
         {
@@ -44,10 +62,24 @@ public class QueryDispatcher : IQueryDispatcher
     {
         try
         {
-            await using var scope = _serviceProvider.CreateAsyncScope();
-            var handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TQuery>>();
-            var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
-            return res;
+            if (_options.Value.CreateScopesForQueries)
+            {
+                await using var scope = _serviceProvider.CreateAsyncScope();
+                
+                var handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TQuery>>();
+                
+                var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
+                
+                return res;
+            }
+            else
+            {
+                var handler = _serviceProvider.GetRequiredService<IQueryHandler<TQuery>>();
+                
+                var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
+                
+                return res;
+            }
         }
         catch (Exception ex)
         {
@@ -57,11 +89,11 @@ public class QueryDispatcher : IQueryDispatcher
     }
     
     /// <inheritdoc/>
-    public async Task<Result<TQueryResult>> DispatchAsync<TQuery, TQueryResult>(TQuery query, IServiceProvider currentScope, CancellationToken cancellation = default) where TQuery : IQuery<TQueryResult>
+    public async Task<Result<TQueryResult>> DispatchAsync<TQuery, TQueryResult>(TQuery query, IServiceProvider scopeToUse, CancellationToken cancellation = default) where TQuery : IQuery<TQueryResult>
     {
         try
         {
-            var handler = currentScope.GetRequiredService<IQueryHandler<TQuery, TQueryResult>>();
+            var handler = scopeToUse.GetRequiredService<IQueryHandler<TQuery, TQueryResult>>();
             var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
             return res;
         }
@@ -73,11 +105,11 @@ public class QueryDispatcher : IQueryDispatcher
     }
     
     /// <inheritdoc/>
-    public async Task<Result> DispatchAsync<TQuery>(TQuery query, IServiceProvider currentScope, CancellationToken cancellation = default) where TQuery : IQuery
+    public async Task<Result> DispatchAsync<TQuery>(TQuery query, IServiceProvider scopeToUse, CancellationToken cancellation = default) where TQuery : IQuery
     {
         try
         {
-            var handler = currentScope.GetRequiredService<IQueryHandler<TQuery>>();
+            var handler = scopeToUse.GetRequiredService<IQueryHandler<TQuery>>();
             var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
             return res;
         }

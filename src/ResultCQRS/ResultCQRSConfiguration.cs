@@ -24,4 +24,12 @@ public sealed class ResultCQRSConfiguration
     /// Gets or sets the default lifetime of a query dispatcher.
     /// </summary>
     public ServiceLifetime DefaultQueryDispatcherLifetime { get; set; } = ServiceLifetime.SingleInstance;
+    /// <summary>
+    /// Gets or sets whether to create a child scope for every dispatched query.
+    /// </summary>
+    public bool CreateScopesForQueries { get; set; } = true;
+    /// <summary>
+    /// Gets or sets whether to create a child scope for every dispatched command.
+    /// </summary>
+    public bool CreateScopesForCommands { get; set; } = true;
 }

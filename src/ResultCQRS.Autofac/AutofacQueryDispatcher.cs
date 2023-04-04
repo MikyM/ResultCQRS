@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace ResultCQRS.Autofac;
 
@@ -10,16 +11,19 @@ public class AutofacQueryDispatcher : IQueryDispatcher
 {
     private readonly ILifetimeScope _lifetimeScope;
     private readonly ILogger<AutofacQueryDispatcher> _logger;
+    private readonly IOptions<ResultCQRSConfiguration> _options;
 
     /// <summary>
     /// Creates new instance of <see cref="AutofacQueryDispatcher"/>.
     /// </summary>
     /// <param name="lifetimeScope">The lifetime scope.</param>
     /// <param name="logger">The logger.</param>
-    public AutofacQueryDispatcher(ILifetimeScope lifetimeScope, ILogger<AutofacQueryDispatcher> logger)
+    /// <param name="options">The options.</param>
+    public AutofacQueryDispatcher(ILifetimeScope lifetimeScope, ILogger<AutofacQueryDispatcher> logger, IOptions<ResultCQRSConfiguration> options)
     {
         _lifetimeScope = lifetimeScope;
         _logger = logger;
+        _options = options;
     }
 
     /// <inheritdoc/>
@@ -27,10 +31,24 @@ public class AutofacQueryDispatcher : IQueryDispatcher
     {
         try
         {
-            await using var scope = _lifetimeScope.BeginLifetimeScope(AutofacSharedCQRSData.LifetimeScopeTag);
-            var handler = scope.Resolve<IQueryHandler<TQuery, TQueryResult>>();
-            var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
-            return res;
+            if (_options.Value.CreateScopesForQueries)
+            {
+                await using var scope = _lifetimeScope.BeginLifetimeScope(AutofacSharedCQRSData.LifetimeScopeTag);
+                
+                var handler = scope.Resolve<IQueryHandler<TQuery, TQueryResult>>();
+                
+                var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
+                
+                return res;
+            }
+            else
+            {
+                var handler = _lifetimeScope.Resolve<IQueryHandler<TQuery, TQueryResult>>();
+                
+                var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
+                
+                return res;
+            }
         }
         catch (Exception ex)
         {
@@ -44,10 +62,24 @@ public class AutofacQueryDispatcher : IQueryDispatcher
     {
         try
         {
-            await using var scope = _lifetimeScope.BeginLifetimeScope(AutofacSharedCQRSData.LifetimeScopeTag);
-            var handler = scope.Resolve<IQueryHandler<TQuery>>();
-            var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
-            return res;
+            if (_options.Value.CreateScopesForQueries)
+            {
+                await using var scope = _lifetimeScope.BeginLifetimeScope(AutofacSharedCQRSData.LifetimeScopeTag);
+                
+                var handler = scope.Resolve<IQueryHandler<TQuery>>();
+                
+                var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
+                
+                return res;
+            }
+            else
+            {
+                var handler = _lifetimeScope.Resolve<IQueryHandler<TQuery>>();
+                
+                var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
+                
+                return res;
+            }
         }
         catch (Exception ex)
         {
@@ -57,11 +89,11 @@ public class AutofacQueryDispatcher : IQueryDispatcher
     }
     
     /// <inheritdoc/>
-    public async Task<Result<TQueryResult>> DispatchAsync<TQuery, TQueryResult>(TQuery query, IServiceProvider currentScope, CancellationToken cancellation = default) where TQuery : IQuery<TQueryResult>
+    public async Task<Result<TQueryResult>> DispatchAsync<TQuery, TQueryResult>(TQuery query, IServiceProvider scopeToUse, CancellationToken cancellation = default) where TQuery : IQuery<TQueryResult>
     {
         try
         {
-            var handler = currentScope.GetRequiredService<IQueryHandler<TQuery, TQueryResult>>();
+            var handler = scopeToUse.GetRequiredService<IQueryHandler<TQuery, TQueryResult>>();
             var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
             return res;
         }
@@ -73,11 +105,11 @@ public class AutofacQueryDispatcher : IQueryDispatcher
     }
     
     /// <inheritdoc/>
-    public async Task<Result> DispatchAsync<TQuery>(TQuery query, IServiceProvider currentScope, CancellationToken cancellation = default) where TQuery : IQuery
+    public async Task<Result> DispatchAsync<TQuery>(TQuery query, IServiceProvider scopeToUse, CancellationToken cancellation = default) where TQuery : IQuery
     {
         try
         {
-            var handler = currentScope.GetRequiredService<IQueryHandler<TQuery>>();
+            var handler = scopeToUse.GetRequiredService<IQueryHandler<TQuery>>();
             var res = await handler.HandleAsync(query, cancellation).ConfigureAwait(false);
             return res;
         }
