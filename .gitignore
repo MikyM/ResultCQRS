@@ -1,5 +1,16 @@
-bin/
-obj/
-/packages/
-riderModule.iml
-/_ReSharper.Caches/
+###############
+#    folder   # 
+###############
+/**/DROP/
+/**/TEMP/
+/**/packages/
+/**/bin/
+/**/obj/
+src/ResultCommander.user
+src/.idea
+src/.vs
+/docs/_site
+/docs/api/*.yml
+/docs/api/.manifest
+/docs/obj
+*.html
