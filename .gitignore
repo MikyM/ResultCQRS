@@ -6,7 +6,7 @@
 /**/packages/
 /**/bin/
 /**/obj/
-src/ResultCommander.user
+src/ResultCQRS.user
 src/.idea
 src/.vs
 /docs/_site
