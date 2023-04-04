@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>ResultCQRS.Autofac</PackageId>
-        <Version>1.0.0</Version>
+        <Version>1.0.1</Version>
         <Authors>Krzysztof Kupisz</Authors>
         <PackageDescription>Library featuring CQRS pattern.</PackageDescription>
         <RepositoryUrl>https://github.com/MikyM/ResultCQRS</RepositoryUrl>

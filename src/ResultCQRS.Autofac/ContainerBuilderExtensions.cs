@@ -53,19 +53,19 @@ public static class ContainerBuilderExtensions
         switch (optionsInstance.DefaultCommandDispatcherLifetime)
         {
             case ServiceLifetime.SingleInstance:
-                builder.RegisterType<CommandDispatcher>().As<ICommandDispatcher>().SingleInstance();
+                builder.RegisterType<AutofacCommandDispatcher>().As<ICommandDispatcher>().SingleInstance();
                 break;
             case ServiceLifetime.InstancePerRequest:
-                builder.RegisterType<CommandDispatcher>().As<ICommandDispatcher>().InstancePerRequest();
+                builder.RegisterType<AutofacCommandDispatcher>().As<ICommandDispatcher>().InstancePerRequest();
                 break;
             case ServiceLifetime.InstancePerLifetimeScope:
-                builder.RegisterType<CommandDispatcher>().As<ICommandDispatcher>().InstancePerLifetimeScope();
+                builder.RegisterType<AutofacCommandDispatcher>().As<ICommandDispatcher>().InstancePerLifetimeScope();
                 break;
             case ServiceLifetime.InstancePerMatchingLifetimeScope:
-                builder.RegisterType<CommandDispatcher>().As<ICommandDispatcher>().InstancePerMatchingLifetimeScope();
+                builder.RegisterType<AutofacCommandDispatcher>().As<ICommandDispatcher>().InstancePerMatchingLifetimeScope();
                 break;
             case ServiceLifetime.InstancePerDependency:
-                builder.RegisterType<CommandDispatcher>().As<ICommandDispatcher>().InstancePerDependency();
+                builder.RegisterType<AutofacCommandDispatcher>().As<ICommandDispatcher>().InstancePerDependency();
                 break;
             case ServiceLifetime.InstancePerOwned:
                 throw new NotSupportedException();
@@ -76,19 +76,19 @@ public static class ContainerBuilderExtensions
         switch (optionsInstance.DefaultCommandDispatcherLifetime)
         {
             case ServiceLifetime.SingleInstance:
-                builder.RegisterType<QueryDispatcher>().As<IQueryDispatcher>().SingleInstance();
+                builder.RegisterType<AutofacQueryDispatcher>().As<IQueryDispatcher>().SingleInstance();
                 break;
             case ServiceLifetime.InstancePerRequest:
-                builder.RegisterType<QueryDispatcher>().As<IQueryDispatcher>().InstancePerRequest();
+                builder.RegisterType<AutofacQueryDispatcher>().As<IQueryDispatcher>().InstancePerRequest();
                 break;
             case ServiceLifetime.InstancePerLifetimeScope:
-                builder.RegisterType<QueryDispatcher>().As<IQueryDispatcher>().InstancePerLifetimeScope();
+                builder.RegisterType<AutofacQueryDispatcher>().As<IQueryDispatcher>().InstancePerLifetimeScope();
                 break;
             case ServiceLifetime.InstancePerMatchingLifetimeScope:
-                builder.RegisterType<QueryDispatcher>().As<IQueryDispatcher>().InstancePerMatchingLifetimeScope();
+                builder.RegisterType<AutofacQueryDispatcher>().As<IQueryDispatcher>().InstancePerMatchingLifetimeScope();
                 break;
             case ServiceLifetime.InstancePerDependency:
-                builder.RegisterType<QueryDispatcher>().As<IQueryDispatcher>().InstancePerDependency();
+                builder.RegisterType<AutofacQueryDispatcher>().As<IQueryDispatcher>().InstancePerDependency();
                 break;
             case ServiceLifetime.InstancePerOwned:
                 throw new NotSupportedException();
