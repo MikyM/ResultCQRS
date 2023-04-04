@@ -15,7 +15,7 @@ public interface IQueryHandler
 /// Represents a query handler.
 /// </summary>
 [PublicAPI]
-public interface IQueryHandler<in TQuery, TQueryResult> : IQueryHandler where TQuery : IQuery
+public interface IQueryHandler<in TQuery, TQueryResult> : IQueryHandler where TQuery : IQuery<TQueryResult>
 {
     /// <summary>
     /// Handles the given query.

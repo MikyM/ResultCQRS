@@ -23,7 +23,7 @@ public class CommandDispatcher : ICommandDispatcher
     }
 
     /// <inheritdoc/>
-    public async Task<Result<TCommandResult>> DispatchAsync<TCommand, TCommandResult>(TCommand command, CancellationToken cancellation = default) where TCommand : ICommand
+    public async Task<Result<TCommandResult>> DispatchAsync<TCommand, TCommandResult>(TCommand command, CancellationToken cancellation = default) where TCommand : ICommand<TCommandResult>
     {
         try
         {
@@ -57,7 +57,7 @@ public class CommandDispatcher : ICommandDispatcher
     }
     
     /// <inheritdoc/>
-    public async Task<Result<TCommandResult>> DispatchAsync<TCommand, TCommandResult>(TCommand command, IServiceProvider currentScope, CancellationToken cancellation = default) where TCommand : ICommand
+    public async Task<Result<TCommandResult>> DispatchAsync<TCommand, TCommandResult>(TCommand command, IServiceProvider currentScope, CancellationToken cancellation = default) where TCommand : ICommand<TCommandResult>
     {
         try
         {

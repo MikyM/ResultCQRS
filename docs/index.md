@@ -1,8 +1,8 @@
-# ResultCommander
+# ResultCQRS
 
-[![Build Status](https://github.com/MikyM/ResultCommander/actions/workflows/release.yml/badge.svg)](https://github.com/MikyM/ResultCommander/actions)
+[![Build Status](https://github.com/MikyM/ResultCQRS/actions/workflows/release.yml/badge.svg)](https://github.com/MikyM/ResultCQRS/actions)
 
-Library featuring a command handler pattern for both synchronous and asynchronous operations.
+Library featuring CQRS pattern in conjuction with functional Results to achieve exception-safe operations and mediator implementations.
 
 Uses a functional [Result](https://github.com/Remora/Remora.Results) approach for failure-prone operations.
 
@@ -10,40 +10,42 @@ To utilize all features using Autofac is required.
 
 ## Features
 
-- Synchronous and asynchronous command handler definitions
-- Definitions and base implementations of commands
-- Supports decorators and adapters via Autofac's methods
+- `ICommand` and `IQuery` abstractions
+- `ICommandHandler` and `IQueryHandler` abstractions
+- `ICommandDispatcher` and `IQueryDispatcher` abstractions and default implementations
+- Supports decorators and adapters via Autofac's methods (for decorators with Microsoft's DI you may consider something like Scrutor)
 
 ## Description
 
-There are two command types - one that only returns a [Result](https://github.com/Remora/Remora.Results) and one that returns an additional entity contained within the [Result](https://github.com/Remora/Remora.Results).
+For both commands and queries, there are two return options - one that only returns a [Result](https://github.com/Remora/Remora.Results) and one that returns an additional entity/DTO contained within the [Result](https://github.com/Remora/Remora.Results).
 
-Every handler must return a [Result](https://github.com/Remora/Remora.Results) struct which determines whether the operation succedeed or not, handlers may or may not return additional results contained within the Result struct - this is defined by the handled comand.
+Every handler must return a [Result](https://github.com/Remora/Remora.Results) struct which determines whether the operation succedeed or not, handlers may or may not return additional results contained within the Result struct.
 
 ## Installation
 
-To register handlers with the DI container use the `ContainerBuilder` or `IServiceCollection` extension methods provided by the library:
+To register the library with the DI container use the `ContainerBuilder` or `IServiceCollection` extension methods provided by the library:
 
 ```csharp
-builder.AddResultCommander(assembliesToScan);
+builder.AddResultCQRS(assembliesToScan);
 ```
 
-To register decorators or adapters use the methods available on ResultCommanderConfiguration like so:
-```csharp
-builder.AddResultCommander(assembliesToScan, options => 
-{
-    options.AddDecorator<FancyDecorator, ISyncCommandHandler<SimpleCommand>();
-});
-```
-You can register multiple decorators and they'll be applied in the order that you register them - read more at [Autofac's docs regarding decorators and adapters](https://autofac.readthedocs.io/en/latest/advanced/adapters-decorators.html).
+To register decorators (or adapters) use:
+1. the attributes provided by [AttributeBasedRegistration](https://github.com/MikyM/AttributeBasedRegistration)
+2. or directly through Autofac, Scrutor or other libraries providing DI decoration support.
+
+If you're using Autofac (or built-in attribute based Autofac) - you can register multiple decorators and they'll be applied in the order that you register them - read more at [Autofac's docs regarding decorators and adapters](https://autofac.readthedocs.io/en/latest/advanced/adapters-decorators.html).
+
+## Documentation
+
+Documentation available at https://docs.result-cqrs.mikym.me/.
 
 ## Example usage
 
-<b> You should never throw exceptions from within handlers, they should be exception free - instead return appropriate error results (and catch possible exceptions).</b> Library offers a simple error catching, logging and exception to result error decorators for uses where writing try-catch blocks becomes a pain - but remember that these results will never be as informative as manually returned proper result error types.
+Library offers a simple error catching and logging within the provided default `Dispatcher` implementations.
 
 A command without a concrete result:
 ```csharp
-public SimpleCommand : ICommand
+public record SimpleCommand : ICommand
 {
     public bool IsSuccess { get; }
     
@@ -52,11 +54,11 @@ public SimpleCommand : ICommand
 }
 ```
 
-And a synchronous handler that handles it:
+And a handler that handles it:
 ```csharp
-public SimpleSyncCommandHandler : ISyncCommandHandler<SimpleCommand>
+public class SimpleCommandHandler : ICommandHandler<SimpleCommand>
 {
-    Result Handle(SimpleCommand command)
+    public async Task<Result> HandleAsync(SimpleCommand command)
     {
         if (command.IsSuccess)
             return Result.FromSuccess();
@@ -68,20 +70,20 @@ public SimpleSyncCommandHandler : ISyncCommandHandler<SimpleCommand>
 
 A command with a concrete result:
 ```csharp
-public SimpleCommandWithConcreteResult : ICommand<int>
+public record SimpleCommandWithConcreteResult : ICommand<int>
 {
     public bool IsSuccess { get; }
     
-    public SimpleCommand(bool isSuccess = true)
+    public SimpleCommandWithConcreteResult(bool isSuccess = true)
         => IsSuccess = isSuccess;
 }
 ```
 
-And a synchronous handler that handles it:
+And a handler that handles it:
 ```csharp
-public SimpleSyncCommandHandlerWithConcreteResult : ISyncCommandHandler<SimpleCommand, int>
+public class SimpleCommandHandlerWithConcreteResult : ICommandHandler<SimpleCommandWithConcreteResult, int>
 {
-    Result<int> Handle(SimpleCommand command)
+    public async Task<Result<int>> HandleAsync(SimpleCommandWithConcreteResult command)
     {
         if (command.IsSuccess)
             return 1;
@@ -90,3 +92,25 @@ public SimpleSyncCommandHandlerWithConcreteResult : ISyncCommandHandler<SimpleCo
     }
 }
 ```
+
+Then in your service you can use:
+
+```csharp
+public class Service : IService
+{
+    private readonly ICommandDispatcher _commandDispatcher;
+
+    public Service(ICommandDispatcher commandDispatcher)
+        => _commandDispatcher = commandDispatcher;
+
+    public async Task<Result> DoAsync()
+    {
+        var result = await _commandDispatcher.DispatchAsync(command)
+            
+        return new InvalidOperationError();
+    }
+}
+```
+
+
+Using queries is pretty much same.

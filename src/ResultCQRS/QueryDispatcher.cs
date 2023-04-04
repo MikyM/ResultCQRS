@@ -23,7 +23,7 @@ public class QueryDispatcher : IQueryDispatcher
     }
 
     /// <inheritdoc/>
-    public async Task<Result<TQueryResult>> DispatchAsync<TQuery, TQueryResult>(TQuery query, CancellationToken cancellation = default) where TQuery : IQuery
+    public async Task<Result<TQueryResult>> DispatchAsync<TQuery, TQueryResult>(TQuery query, CancellationToken cancellation = default) where TQuery : IQuery<TQueryResult>
     {
         try
         {
@@ -57,7 +57,7 @@ public class QueryDispatcher : IQueryDispatcher
     }
     
     /// <inheritdoc/>
-    public async Task<Result<TQueryResult>> DispatchAsync<TQuery, TQueryResult>(TQuery query, IServiceProvider currentScope, CancellationToken cancellation = default) where TQuery : IQuery
+    public async Task<Result<TQueryResult>> DispatchAsync<TQuery, TQueryResult>(TQuery query, IServiceProvider currentScope, CancellationToken cancellation = default) where TQuery : IQuery<TQueryResult>
     {
         try
         {

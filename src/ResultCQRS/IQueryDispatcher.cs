@@ -16,7 +16,7 @@ public interface IQueryDispatcher
     /// <typeparam name="TQuery">Type of the query.</typeparam>
     /// <typeparam name="TQueryResult">Type of the result.</typeparam>
     /// <returns>The result of the operation.</returns>
-    Task<Result<TQueryResult>> DispatchAsync<TQuery, TQueryResult>(TQuery query, CancellationToken cancellation = default) where TQuery : IQuery;
+    Task<Result<TQueryResult>> DispatchAsync<TQuery, TQueryResult>(TQuery query, CancellationToken cancellation = default) where TQuery : IQuery<TQueryResult>;
     
     /// <summary>
     /// Dispatches the given query.
@@ -36,7 +36,7 @@ public interface IQueryDispatcher
     /// <typeparam name="TQuery">Type of the query.</typeparam>
     /// <typeparam name="TQueryResult">Type of the result.</typeparam>
     /// <returns>The result of the operation.</returns>
-    Task<Result<TQueryResult>> DispatchAsync<TQuery, TQueryResult>(TQuery command, IServiceProvider scope, CancellationToken cancellation = default) where TQuery : IQuery;
+    Task<Result<TQueryResult>> DispatchAsync<TQuery, TQueryResult>(TQuery command, IServiceProvider scope, CancellationToken cancellation = default) where TQuery : IQuery<TQueryResult>;
     
     /// <summary>
     /// Dispatches the given query using the given scope.

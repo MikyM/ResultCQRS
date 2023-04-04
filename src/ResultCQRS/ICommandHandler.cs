@@ -14,7 +14,7 @@ public interface ICommandHandler
 /// Represents a command handler.
 /// </summary>
 [PublicAPI]
-public interface ICommandHandler<in TCommand, TCommandResult> : ICommandHandler where TCommand : ICommand
+public interface ICommandHandler<in TCommand, TCommandResult> : ICommandHandler where TCommand : ICommand<TCommandResult>
 {
     /// <summary>
     /// Handles the given command.
