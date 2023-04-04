@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResultCQRS", "ResultCQRS\ResultCQRS.csproj", "{AB22EBA6-E87D-4C4E-8F6A-766D0CA11EC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResultCQRS.Autofac", "ResultCQRS.Autofac\ResultCQRS.Autofac.csproj", "{B994E039-F158-43EA-90B2-BBECB17E1A63}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB22EBA6-E87D-4C4E-8F6A-766D0CA11EC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB22EBA6-E87D-4C4E-8F6A-766D0CA11EC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB22EBA6-E87D-4C4E-8F6A-766D0CA11EC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB22EBA6-E87D-4C4E-8F6A-766D0CA11EC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B994E039-F158-43EA-90B2-BBECB17E1A63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B994E039-F158-43EA-90B2-BBECB17E1A63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B994E039-F158-43EA-90B2-BBECB17E1A63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B994E039-F158-43EA-90B2-BBECB17E1A63}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
