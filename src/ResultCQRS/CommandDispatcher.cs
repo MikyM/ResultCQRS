@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using AttributeBasedRegistration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Remora.Results;
@@ -31,7 +32,7 @@ public class CommandDispatcher : ICommandDispatcher
     {
         try
         {
-            if (_options.Value.CreateScopesForCommands)
+            if (_options.Value.CreateScopesForCommands || (_options.Value.CreateScopeForCommandsIfCurrentIsRoot && _serviceProvider.IsRootScope()))
             {
                 await using var scope = _serviceProvider.CreateAsyncScope();
                 
@@ -62,7 +63,7 @@ public class CommandDispatcher : ICommandDispatcher
     {
         try
         {
-            if (_options.Value.CreateScopesForCommands)
+            if (_options.Value.CreateScopesForCommands || (_options.Value.CreateScopeForCommandsIfCurrentIsRoot && _serviceProvider.IsRootScope()))
             {
                 await using var scope = _serviceProvider.CreateAsyncScope();
                 

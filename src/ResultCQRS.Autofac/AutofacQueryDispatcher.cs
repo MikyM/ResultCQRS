@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using AttributeBasedRegistration.Autofac;
+using Autofac;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -31,7 +32,7 @@ public class AutofacQueryDispatcher : IQueryDispatcher
     {
         try
         {
-            if (_options.Value.CreateScopesForQueries)
+            if (_options.Value.CreateScopesForQueries || (_options.Value.CreateScopeForQueriesIfCurrentIsRoot && _lifetimeScope.IsRootScope()))
             {
                 await using var scope = _lifetimeScope.BeginLifetimeScope(AutofacSharedCQRSData.LifetimeScopeTag);
                 
@@ -62,7 +63,7 @@ public class AutofacQueryDispatcher : IQueryDispatcher
     {
         try
         {
-            if (_options.Value.CreateScopesForQueries)
+            if (_options.Value.CreateScopesForQueries || (_options.Value.CreateScopeForQueriesIfCurrentIsRoot && _lifetimeScope.IsRootScope()))
             {
                 await using var scope = _lifetimeScope.BeginLifetimeScope(AutofacSharedCQRSData.LifetimeScopeTag);
                 

@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/MikyM/ResultCQRS/actions/workflows/release.yml/badge.svg)](https://github.com/MikyM/ResultCQRS/actions)
 
-Library featuring CQRS pattern in conjuction with functional Results to achieve exception-safe operations and mediator implementations.
+Library featuring CQRS pattern and mediator implementations in conjuction with functional Results to achieve exception-safe operations.
 
 Uses a functional [Result](https://github.com/Remora/Remora.Results) approach for failure-prone operations.
 

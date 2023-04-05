@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using AttributeBasedRegistration;
 using AttributeBasedRegistration.Attributes.Abstractions;
 using AttributeBasedRegistration.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,6 +37,8 @@ public static class ServiceCollectionExtensions
 
         var optionsInstance = new ResultCQRSConfiguration();
         options(optionsInstance);
+
+        services.AddRootScopeIdentifier();
 
         foreach (var co in commandImpl)
         {
