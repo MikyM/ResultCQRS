@@ -1,6 +1,4 @@
-﻿using AttributeBasedRegistration.Autofac;
-using Autofac;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Autofac;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -28,91 +26,16 @@ public class AutofacCommandDispatcher : ICommandDispatcher
     }
 
     /// <inheritdoc/>
-    public async Task<Result<TCommandResult>> DispatchAsync<TCommand, TCommandResult>(TCommand command, CancellationToken cancellation = default) where TCommand : ICommand<TCommandResult>
-    {
-        try
-        {
-            if (_options.Value.CreateScopesForCommands || (_options.Value.CreateScopeForCommandsIfCurrentIsRoot && _lifetimeScope.IsRootScope()))
-            {
-                await using var scope = _lifetimeScope.BeginLifetimeScope(AutofacSharedCQRSData.LifetimeScopeTag);
-                
-                var handler = scope.Resolve<ICommandHandler<TCommand, TCommandResult>>();
-                
-                var res = await handler.HandleAsync(command, cancellation).ConfigureAwait(false);
-                
-                return res;
-            }
-            else
-            {
-                var handler = _lifetimeScope.Resolve<ICommandHandler<TCommand, TCommandResult>>();
-                
-                var res = await handler.HandleAsync(command, cancellation).ConfigureAwait(false);
-                
-                return res;
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An exception occured while dispatching a command");
-            return ex;
-        }
-    }
-    
-    /// <inheritdoc/>
     public async Task<Result> DispatchAsync<TCommand>(TCommand command, CancellationToken cancellation = default) where TCommand : ICommand
     {
         try
         {
-            if (_options.Value.CreateScopesForCommands || (_options.Value.CreateScopeForCommandsIfCurrentIsRoot && _lifetimeScope.IsRootScope()))
-            {
-                await using var scope = _lifetimeScope.BeginLifetimeScope(AutofacSharedCQRSData.LifetimeScopeTag);
-                
-                var handler = scope.Resolve<ICommandHandler<TCommand>>();
-                
-                var res = await handler.HandleAsync(command, cancellation).ConfigureAwait(false);
-                
-                return res;
-            }
-            else
-            {
-                var handler = _lifetimeScope.Resolve<ICommandHandler<TCommand>>();
-                
-                var res = await handler.HandleAsync(command, cancellation).ConfigureAwait(false);
-                
-                return res;
-            }
+            await using var scope = _lifetimeScope.BeginLifetimeScope(AutofacSharedCQRSData.LifetimeScopeTag);
 
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An exception occured while dispatching a command");
-            return ex;
-        }
-    }
-    
-    /// <inheritdoc/>
-    public async Task<Result<TCommandResult>> DispatchAsync<TCommand, TCommandResult>(TCommand command, IServiceProvider scopeToUse, CancellationToken cancellation = default) where TCommand : ICommand<TCommandResult>
-    {
-        try
-        {
-            var handler = scopeToUse.GetRequiredService<ICommandHandler<TCommand, TCommandResult>>();
+            var handler = scope.Resolve<ICommandHandler<TCommand>>();
+
             var res = await handler.HandleAsync(command, cancellation).ConfigureAwait(false);
-            return res;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An exception occured while dispatching a command");
-            return ex;
-        }
-    }
-    
-    /// <inheritdoc/>
-    public async Task<Result> DispatchAsync<TCommand>(TCommand command, IServiceProvider scopeToUse, CancellationToken cancellation = default) where TCommand : ICommand
-    {
-        try
-        {
-            var handler = scopeToUse.GetRequiredService<ICommandHandler<TCommand>>();
-            var res = await handler.HandleAsync(command, cancellation).ConfigureAwait(false);
+
             return res;
         }
         catch (Exception ex)

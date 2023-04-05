@@ -101,33 +101,24 @@ public static class ServiceCollectionExtensions
 
     private static void RegisterCommandHandler(IServiceCollection services, Type implementation, ResultCQRSConfiguration options)
     {
-        var withoutResult = implementation.GetInterfaces().FirstOrDefault(x => x.IsAssignableToWithGenerics(typeof(ICommandHandler<>)));
-        var withResult = implementation.GetInterfaces().FirstOrDefault(x => x.IsAssignableToWithGenerics(typeof(ICommandHandler<,>)));
-        
+        var type = implementation.GetInterfaces().FirstOrDefault(x => x.IsAssignableToWithGenerics(typeof(ICommandHandler<>)));
+
         var lifetimeAttribute = GetLifetimeAttribute(implementation);
         var lifetime = lifetimeAttribute?.ServiceLifetime ?? options.DefaultQueryHandlerLifetime;
 
-        if (withoutResult is not null)
-            RegisterHandler(services, implementation, withoutResult, lifetime);
-        
-        if (withResult is not null)
-            RegisterHandler(services, implementation, withResult, lifetime);
+        if (type is not null)
+            RegisterHandler(services, implementation, type, lifetime);
     }
     
     private static void RegisterQueryHandler(IServiceCollection services, Type implementation, ResultCQRSConfiguration options)
     {
-        var withoutResult = implementation.GetInterfaces().FirstOrDefault(x => x.IsAssignableToWithGenerics(typeof(IQueryHandler<>)));
-        var withResult = implementation.GetInterfaces().FirstOrDefault(x => x.IsAssignableToWithGenerics(typeof(IQueryHandler<,>)));
+        var type = implementation.GetInterfaces().FirstOrDefault(x => x.IsAssignableToWithGenerics(typeof(IQueryHandler<,>)));
         
         var lifetimeAttribute = GetLifetimeAttribute(implementation);
         var lifetime = lifetimeAttribute?.ServiceLifetime ?? options.DefaultQueryHandlerLifetime;
         
-
-        if (withoutResult is not null)
-            RegisterHandler(services, implementation, withoutResult, lifetime);
-        
-        if (withResult is not null)
-            RegisterHandler(services, implementation, withResult, lifetime);
+        if (type is not null)
+            RegisterHandler(services, implementation, type, lifetime);
     }
 
     private static void RegisterHandler(IServiceCollection services, Type implementation, Type serviceType, ServiceLifetime lifetime)

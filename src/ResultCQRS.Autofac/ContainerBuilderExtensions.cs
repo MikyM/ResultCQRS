@@ -108,9 +108,8 @@ public static class ContainerBuilderExtensions
         if (implementation.GetRegistrationAttributesOfType<ISkipRegistrationAttribute>().Any())
             return;
         
-        var withoutResult = implementation.GetInterfaces().FirstOrDefault(x => x.IsAssignableToWithGenerics(typeof(ICommandHandler<>)));
-        var withResult = implementation.GetInterfaces().FirstOrDefault(x => x.IsAssignableToWithGenerics(typeof(ICommandHandler<,>)));
-        
+        var type = implementation.GetInterfaces().FirstOrDefault(x => x.IsAssignableToWithGenerics(typeof(ICommandHandler<>)));
+
         var lifetimeAttribute = GetLifetimeAttribute(implementation);
         var lifetime = lifetimeAttribute?.ServiceLifetime ?? options.DefaultQueryHandlerLifetime;
 
@@ -118,20 +117,16 @@ public static class ContainerBuilderExtensions
         var interceptedByAttributes = GetInterceptorAttributes(implementation).ToArray();
         var decoratedByAttributes = GetDecoratorAttributes(implementation).ToArray();
 
-        if (withoutResult is not null)
-            RegisterHandler(builder, implementation, withoutResult, lifetime, interceptionAttribute, interceptedByAttributes, decoratedByAttributes);
-        
-        if (withResult is not null)
-            RegisterHandler(builder, implementation, withResult, lifetime, interceptionAttribute, interceptedByAttributes, decoratedByAttributes);
+        if (type is not null)
+            RegisterHandler(builder, implementation, type, lifetime, interceptionAttribute, interceptedByAttributes, decoratedByAttributes);
     }
     
     private static void RegisterQueryHandler(ContainerBuilder builder, Type implementation, ResultCQRSConfiguration options)
     {
         if (implementation.GetRegistrationAttributesOfType<ISkipRegistrationAttribute>().Any())
             return;
-        
-        var withoutResult = implementation.GetInterfaces().FirstOrDefault(x => x.IsAssignableToWithGenerics(typeof(IQueryHandler<>)));
-        var withResult = implementation.GetInterfaces().FirstOrDefault(x => x.IsAssignableToWithGenerics(typeof(IQueryHandler<,>)));
+
+        var type = implementation.GetInterfaces().FirstOrDefault(x => x.IsAssignableToWithGenerics(typeof(IQueryHandler<,>)));
         
         var lifetimeAttribute = GetLifetimeAttribute(implementation);
         var lifetime = lifetimeAttribute?.ServiceLifetime ?? options.DefaultQueryHandlerLifetime;
@@ -140,11 +135,8 @@ public static class ContainerBuilderExtensions
         var interceptedByAttributes = GetInterceptorAttributes(implementation).ToArray();
         var decoratedByAttributes = GetDecoratorAttributes(implementation).ToArray();
         
-        if (withoutResult is not null)
-            RegisterHandler(builder, implementation, withoutResult, lifetime, interceptionAttribute, interceptedByAttributes, decoratedByAttributes);
-        
-        if (withResult is not null)
-            RegisterHandler(builder, implementation, withResult, lifetime, interceptionAttribute, interceptedByAttributes, decoratedByAttributes);
+        if (type is not null)
+            RegisterHandler(builder, implementation, type, lifetime, interceptionAttribute, interceptedByAttributes, decoratedByAttributes);
     }
 
     private static void RegisterHandler(ContainerBuilder builder, Type implementation, Type serviceType, ServiceLifetime lifetime, 

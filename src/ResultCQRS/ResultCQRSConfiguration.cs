@@ -24,21 +24,4 @@ public sealed class ResultCQRSConfiguration
     /// Gets or sets the default lifetime of a query dispatcher.
     /// </summary>
     public ServiceLifetime DefaultQueryDispatcherLifetime { get; set; } = ServiceLifetime.InstancePerLifetimeScope;
-    /// <summary>
-    /// Gets or sets whether to create a child scope for every dispatched query.
-    /// </summary>
-    public bool CreateScopesForQueries { get; set; }
-    /// <summary>
-    /// Gets or sets whether to create a child scope for every dispatched command.
-    /// </summary>
-    public bool CreateScopesForCommands { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether to create a child scope for a dispatched query if current scope is the root scope (to avoid captive dependencies).
-    /// </summary>
-    public bool CreateScopeForQueriesIfCurrentIsRoot { get; set; } = true;
-    /// <summary>
-    /// Gets or sets whether to create a child scope for a dispatched command if current scope is the root scope (to avoid captive dependencies).
-    /// </summary>
-    public bool CreateScopeForCommandsIfCurrentIsRoot { get; set; } = true;
 }

@@ -1,5 +1,4 @@
-﻿using AttributeBasedRegistration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Remora.Results;
@@ -28,90 +27,16 @@ public class CommandDispatcher : ICommandDispatcher
     }
 
     /// <inheritdoc/>
-    public async Task<Result<TCommandResult>> DispatchAsync<TCommand, TCommandResult>(TCommand command, CancellationToken cancellation = default) where TCommand : ICommand<TCommandResult>
-    {
-        try
-        {
-            if (_options.Value.CreateScopesForCommands || (_options.Value.CreateScopeForCommandsIfCurrentIsRoot && _serviceProvider.IsRootScope()))
-            {
-                await using var scope = _serviceProvider.CreateAsyncScope();
-                
-                var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<TCommand, TCommandResult>>();
-                
-                var res = await handler.HandleAsync(command, cancellation).ConfigureAwait(false);
-                
-                return res;
-            }
-            else
-            {
-                var handler = _serviceProvider.GetRequiredService<ICommandHandler<TCommand, TCommandResult>>();
-                
-                var res = await handler.HandleAsync(command, cancellation).ConfigureAwait(false);
-                
-                return res;
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An exception occured while dispatching a command");
-            return ex;
-        }
-    }
-    
-    /// <inheritdoc/>
     public async Task<Result> DispatchAsync<TCommand>(TCommand command, CancellationToken cancellation = default) where TCommand : ICommand
     {
         try
         {
-            if (_options.Value.CreateScopesForCommands || (_options.Value.CreateScopeForCommandsIfCurrentIsRoot && _serviceProvider.IsRootScope()))
-            {
-                await using var scope = _serviceProvider.CreateAsyncScope();
+            await using var scope = _serviceProvider.CreateAsyncScope();
                 
-                var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<TCommand>>();
+            var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<TCommand>>();
                 
-                var res = await handler.HandleAsync(command, cancellation).ConfigureAwait(false);
-                
-                return res;
-            }
-            else
-            {
-                var handler = _serviceProvider.GetRequiredService<ICommandHandler<TCommand>>();
-                
-                var res = await handler.HandleAsync(command, cancellation).ConfigureAwait(false);
-                
-                return res;
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An exception occured while dispatching a command");
-            return ex;
-        }
-    }
-    
-    /// <inheritdoc/>
-    public async Task<Result<TCommandResult>> DispatchAsync<TCommand, TCommandResult>(TCommand command, IServiceProvider scopeToUse, CancellationToken cancellation = default) where TCommand : ICommand<TCommandResult>
-    {
-        try
-        {
-            var handler = scopeToUse.GetRequiredService<ICommandHandler<TCommand, TCommandResult>>();
             var res = await handler.HandleAsync(command, cancellation).ConfigureAwait(false);
-            return res;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An exception occured while dispatching a command");
-            return ex;
-        }
-    }
-    
-    /// <inheritdoc/>
-    public async Task<Result> DispatchAsync<TCommand>(TCommand command, IServiceProvider scopeToUse, CancellationToken cancellation = default) where TCommand : ICommand
-    {
-        try
-        {
-            var handler = scopeToUse.GetRequiredService<ICommandHandler<TCommand>>();
-            var res = await handler.HandleAsync(command, cancellation).ConfigureAwait(false);
+                
             return res;
         }
         catch (Exception ex)
