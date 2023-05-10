@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>ResultCQRS.Autofac</PackageId>
-        <Version>1.0.4</Version>
+        <Version>1.0.5</Version>
         <Authors>Krzysztof Kupisz</Authors>
         <PackageDescription>Library featuring CQRS pattern.</PackageDescription>
         <RepositoryUrl>https://github.com/MikyM/ResultCQRS</RepositoryUrl>
@@ -17,8 +17,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AttributeBasedRegistration.Autofac" Version="2.1.0" />
-      <PackageReference Include="Autofac" Version="7.0.0" />
+      <PackageReference Include="AttributeBasedRegistration.Autofac" Version="2.1.2" />
+      <PackageReference Include="Autofac" Version="7.0.1" />
       <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
     </ItemGroup>
 
