@@ -37,7 +37,7 @@ If you're using Autofac (or built-in attribute based Autofac) - you can register
 
 ## Documentation
 
-Documentation available at https://docs.result-cqrs.mikym.me/.
+Documentation available at https://result-cqrs.mikym.me/.
 
 ## Example usage
 
